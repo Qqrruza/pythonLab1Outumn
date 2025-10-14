@@ -47,7 +47,7 @@ def print_function_graph():
 
 
 if __name__ == "__main__":
-    paint_france(10, 20)
+    paint_france(7, 20)
     print("\n\n")
     print_chess(11)
     print_function_graph()
