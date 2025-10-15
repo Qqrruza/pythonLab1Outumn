@@ -6,7 +6,6 @@
 #
 # доп. задание: реализовать анимацию из 2-3 кадров
 import os
-import math
 import time
 
 def clear_console():
@@ -86,9 +85,36 @@ def analyze_sequence():
     print("Меньше 0: " + red * less_than_zero  + f" ({less_than_zero})")
     print("Больше 0: " + red * greater_than_zero + f" ({greater_than_zero})")
 
+def rainbow_pixels():
+    rainbow = [
+        "\u001b[41m \u001b[0m",  # красный
+        "\u001b[43m \u001b[0m",  # желтый
+        "\u001b[42m \u001b[0m",  # зеленый
+        "\u001b[46m \u001b[0m",  # голубой
+        "\u001b[44m \u001b[0m",  # синий
+        "\u001b[45m \u001b[0m"   # фиолетовый
+        ]
+    
+    for frame in range(20):
+        os.system("cls" if os.name == 'nt' else "clear")
+        
+        for i in range(6):
+            line = ""
+            for j in range(12):
+                color_idx = (frame + i + j) % len(rainbow)
+                line += rainbow[color_idx]
+            print("   " + line)
+        
+        
+        time.sleep(0.1)
+
+
 if __name__ == "__main__":
     paint_france(7, 20)
     print("\n\n")
     print_chess(11)
     print_function_graph()
     analyze_sequence()
+    time.sleep(10)
+    rainbow_pixels()
+    
