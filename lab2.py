@@ -8,12 +8,8 @@ def process_books_csv():
     print("=== ОБРАБОТКА books.csv ===\n")
 
     with open("books.csv", "r", encoding="windows-1251") as books_file:
-        books_file.seek(0)
         reader = csv.DictReader(books_file, delimiter=";")
-
         # 1. Количество записей с названием длиннее 30 символов
-        books_file.seek(0)
-        reader = csv.DictReader(books_file, delimiter=";")
         long_titles_count = 0
         all_books = []
 
@@ -50,10 +46,10 @@ def process_books_csv():
         print(
             f"\n2. Найдено книг автора '{author_to_search}' до 150 руб: {len(found_books)}"
         )
-        for i, book in enumerate(found_books[:10], 1):
+        for i, book in enumerate(found_books, 1):
             title = book.get("Название", "")
             price = book.get("Цена поступления", "0")
-            print(f"   {i}. {title}... - {price} руб")
+            print(f"   {i}. {title} - {price} руб")
 
         # 3. Генератор библиографических ссылок
         def generate_references(books, count=20):
@@ -63,11 +59,11 @@ def process_books_csv():
                 author = book.get("Автор", "Неизвестный автор")
                 title = book.get("Название", "Без названия")
                 date_str = book.get("Дата поступления", "")
-                year = (
-                    date_str.split(".")[-1].split()[0]
-                    if date_str and "." in date_str
-                    else "нет года"
-                )
+                if date_str and "." in date_str:
+                    year = date_str.split(".")[-1].split()[0]
+                else:
+                    year = "нет года"
+
                 references.append(f"{author}. {title} - {year}")
             return references
 
@@ -84,10 +80,9 @@ def process_books_csv():
 
 
 def process_currency_xml():
-    """Обработка файла currency.xml"""
     print("\n=== ОБРАБОТКА currency.xml ===\n")
 
-    # 4. Парсинг XML с использованием xml.dom.minidom
+    # 4. Парсинг XML 
     dom_tree = xml.dom.minidom.parse("currency.xml")
     root = dom_tree.documentElement
 
@@ -107,7 +102,7 @@ def process_currency_xml():
             currency_dict[name] = value_float
 
     print("4. Словарь 'Name - Value':")
-    for i, (name, value) in enumerate(list(currency_dict.items())[:50], 1):
+    for i, (name, value) in enumerate(list(currency_dict.items()), 1):
         print(f"   {i}. {name}: {value}")
 
     print(f"\nВсего валют в словаре: {len(currency_dict)}")
@@ -116,7 +111,6 @@ def process_currency_xml():
 
 
 def extract_unique_tags(books):
-    """Извлечение уникальных тегов из поля 'Жанр книги'"""
     print("\n5. Перечень всех тегов без повторений:")
 
     all_tags = set()
@@ -138,8 +132,6 @@ def extract_unique_tags(books):
 
 
 def additional_tasks(books):
-    """Дополнительные задания"""
-    print("\n=== ДОПОЛНИТЕЛЬНЫЕ ЗАДАНИЯ ===\n")
 
     # 5. Перечень всех тегов без повторений
     unique_tags = extract_unique_tags(books)
@@ -162,10 +154,9 @@ def additional_tasks(books):
 
     for i, (issues, book) in enumerate(books_with_issues[:20], 1):
         title = book.get("Название", "")
-        
-            
+         
         author = book.get("Автор", "")
-        print(f"   {i}. {title}")
+        print(f"\t{i}. {title}")
         print(f"      Автор: {author}, Выдач: {issues}")
 
 
