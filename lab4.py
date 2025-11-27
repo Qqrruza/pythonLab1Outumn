@@ -91,50 +91,49 @@ def create_backpack_layout(selected_items, stuffdict):
     return backpack
 
 
-def find_all_combinations(items, capacity, current_combo=None, index=0):
-    if current_combo is None:
-        current_combo = []
+def find_all_combinations(stuffdict, capacity):
+    items = list(stuffdict.keys())
+    n = len(items)
     
-    if index == len(items):
-        return [current_combo] if current_combo else []
+    dp = [[] for _ in range(capacity + 1)]
     
-    current_item = items[index]
-    current_size = stuffdict[current_item][1]
+    for i in range(n):
+        item = items[i]
+        item_size = stuffdict[item][1]
+        
+        for a in range(capacity, item_size - 1, -1):
+            for combo in dp[a - item_size]:
+                new_combo = combo + [item]
+                if sum(stuffdict[item][1] for item in new_combo) <= capacity:
+                    if new_combo not in dp[a]:
+                        dp[a].append(new_combo)
     
-    combinations_without = find_all_combinations(items, capacity, current_combo, index + 1)
+    all_combinations = []
+    for a in range(capacity + 1):
+        all_combinations.extend(dp[a])
     
-    combinations_with = []
-    total_current_size = sum(stuffdict[item][1] for item in current_combo) + current_size
-    if total_current_size <= capacity:
-        combinations_with = find_all_combinations(
-            items, capacity, current_combo + [current_item], index + 1
-        )
-    
-    return combinations_without + combinations_with
+    return all_combinations
 
 
 def solve_tom_problem(capacity=8, find_all_combinations_b=False):
     
     if find_all_combinations_b:
         total_all_points = sum(stuffdict[item][2] for item in stuffdict)
-        all_items = list(stuffdict.keys())
         positive_combinations = []
 
-        all_combinations = find_all_combinations(all_items, capacity)
-        
-        all_combinations.append([])
+        # Используем динамическое программирование вместо рекурсии
+        all_combinations = find_all_combinations(stuffdict, capacity)
         
         for combo in all_combinations:
             total_size = sum(stuffdict[item][1] for item in combo)
-            if total_size <= capacity: 
-                points_selected = sum(stuffdict[item][2] for item in combo)
-                final_score = (
-                    base_rate + points_selected - (total_all_points - points_selected)
-                )
+            points_selected = sum(stuffdict[item][2] for item in combo)
+            final_score = (
+                base_rate + points_selected - (total_all_points - points_selected)
+            )
 
-                if final_score > 0:
-                    backpack = create_backpack_layout(combo, stuffdict)
-                    positive_combinations.append((combo, final_score, total_size, backpack))
+            if final_score > 0:
+                backpack = create_backpack_layout(combo, stuffdict)
+                positive_combinations.append((combo, final_score, total_size, backpack))
 
         positive_combinations.sort(key=lambda x: x[1], reverse=True)
 
